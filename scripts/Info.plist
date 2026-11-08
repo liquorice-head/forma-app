@@ -5,12 +5,13 @@
     <key>CFBundleIdentifier</key><string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
     <key>CFBundleName</key><string>Forma</string>
     <key>CFBundleDisplayName</key><string>Forma</string>
+    <key>FormaReleaseChannel</key><string>public</string>
     <key>CFBundleIconFile</key><string>AppIcon</string>
     <key>CFBundleIconName</key><string>AppIcon</string>
     <key>FormaCloudContainerIdentifier</key><string>iCloud.$(PRODUCT_BUNDLE_IDENTIFIER)</string>
     <key>CFBundlePackageType</key><string>APPL</string>
-    <key>CFBundleShortVersionString</key><string>0.7.2</string>
-    <key>CFBundleVersion</key><string>10</string>
+    <key>CFBundleShortVersionString</key><string>0.7.3</string>
+    <key>CFBundleVersion</key><string>11</string>
     <key>SUFeedURL</key><string>https://github.com/liquorice-head/forma-app/releases/latest/download/appcast.xml</string>
     <key>SUPublicEDKey</key><string>qKcbp8pEXSLEagIgy/wDq7u5Y4nrV1u8lOrWZjOdsOI=</string>
     <key>SUEnableAutomaticChecks</key><false/>

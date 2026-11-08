@@ -31,8 +31,10 @@ import Sparkle
 
     override init() {
         super.init()
-        do { token = try UpdateCredentials.load(); hasToken = token != nil }
-        catch { status = error.localizedDescription }
+        if AppIdentity.isStagingBuild {
+            do { token = try UpdateCredentials.load(); hasToken = token != nil }
+            catch { status = error.localizedDescription }
+        }
     }
     func start() {
         guard !started, configured else { return }
@@ -52,6 +54,7 @@ import Sparkle
     }
     func checkForUpdates() { Task { await performCheck(interactive: true) } }
     func saveAccess(_ value: String) {
+        guard AppIdentity.isStagingBuild else { return }
         do {
             let cleaned = value.trimmingCharacters(in: .whitespacesAndNewlines)
             try UpdateCredentials.save(cleaned.isEmpty ? nil : cleaned)
@@ -87,8 +90,12 @@ import Sparkle
             else { updater.checkForUpdatesInBackground() }
         } catch {
             busy = false
-            status = (error as? UpdateFailure)?.localizedDescription ?? "Не удалось проверить обновления. Попробуйте позже."
-            if interactive, case UpdateFailure.accessRequired = error { onAccessRequired?() }
+            if case UpdateFailure.accessRequired = error, !AppIdentity.isStagingBuild {
+                status = UpdateFailure.unavailable.localizedDescription
+            } else {
+                status = (error as? UpdateFailure)?.localizedDescription ?? "Не удалось проверить обновления. Попробуйте позже."
+                if interactive, case UpdateFailure.accessRequired = error { onAccessRequired?() }
+            }
         }
     }
     private var updaterStarted = false

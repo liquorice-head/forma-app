@@ -16,15 +16,17 @@ struct UpdateSettingsView: View {
                 Button(tr("Сохранить и установить")) { updater.retryInstallation() }
             }
             if let status = updater.status { Text(tr(status)).font(.caption).foregroundStyle(.secondary) }
-            DisclosureGroup(tr("Доступ к закрытому репозиторию")) {
-                Text(tr("Для закрытых релизов нужен GitHub-токен только с доступом Contents: Read к репозиторию Forma. Он хранится в Связке ключей на этом Mac. Для публичных релизов токен не нужен."))
-                    .font(.caption).foregroundStyle(.secondary)
-                SecureField(tr("GitHub-токен"), text: $token)
-                HStack {
-                    Button(tr("Сохранить доступ")) { updater.saveAccess(token); token = "" }.disabled(token.isEmpty)
-                    if updater.hasToken { Button(tr("Удалить доступ")) { updater.saveAccess("") } }
+            if AppIdentity.isStagingBuild {
+                DisclosureGroup(tr("Доступ к закрытому репозиторию")) {
+                    Text(tr("Для закрытых релизов нужен GitHub-токен только с доступом Contents: Read к репозиторию Forma. Он хранится в Связке ключей на этом Mac. Для публичных релизов токен не нужен."))
+                        .font(.caption).foregroundStyle(.secondary)
+                    SecureField(tr("GitHub-токен"), text: $token)
+                    HStack {
+                        Button(tr("Сохранить доступ")) { updater.saveAccess(token); token = "" }.disabled(token.isEmpty)
+                        if updater.hasToken { Button(tr("Удалить доступ")) { updater.saveAccess("") } }
+                    }
+                    Link(tr("Создать токен GitHub"), destination: URL(string: "https://github.com/settings/personal-access-tokens/new")!)
                 }
-                Link(tr("Создать токен GitHub"), destination: URL(string: "https://github.com/settings/personal-access-tokens/new")!)
             }
         }
     }
