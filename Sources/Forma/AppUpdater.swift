@@ -22,6 +22,7 @@ import Sparkle
     @ObservationIgnored private var scheduler: Task<Void, Never>?
     @ObservationIgnored private var pendingInstall: (() -> Void)?
     @ObservationIgnored private var token: String?
+    @ObservationIgnored private var archiveToken: String?
     @ObservationIgnored private let session = HTTPClient.make()
     private var feed: URL?
     private var started = false
@@ -77,7 +78,7 @@ import Sparkle
             }
             guard let updater = controller?.updater else { throw UpdateFailure.unavailable }
             updater.httpHeaders = ["Accept": "application/octet-stream", "X-GitHub-Api-Version": "2022-11-28"]
-            if let effectiveToken { updater.httpHeaders?["Authorization"] = "Bearer \(effectiveToken)" }
+            archiveToken = effectiveToken
             // GitHub's private asset IDs change per release; our scheduler resolves the current feed first.
             updater.automaticallyChecksForUpdates = false
             updater.automaticallyDownloadsUpdates = automaticInstall
@@ -96,6 +97,9 @@ import Sparkle
     func updater(_ updater: SPUUpdater, shouldDownloadReleaseNotesForUpdate updateItem: SUAppcastItem) -> Bool { false }
     func updater(_ updater: SPUUpdater, shouldProceedWithUpdate updateItem: SUAppcastItem, updateCheck: SPUUpdateCheck) throws {
         guard let url = updateItem.fileURL, GitHubUpdates.isAssetURL(url) else { throw UpdateFailure.invalidAsset }
+    }
+    func updater(_ updater: SPUUpdater, willDownloadUpdate item: SUAppcastItem, with request: NSMutableURLRequest) {
+        GitHubUpdates.authorizeArchive(request, token: archiveToken)
     }
     func updater(_ updater: SPUUpdater, didFinishUpdateCycleFor updateCheck: SPUUpdateCheck, error: Error?) {
         busy = false

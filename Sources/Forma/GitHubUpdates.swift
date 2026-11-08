@@ -47,7 +47,37 @@ enum GitHubUpdates {
             if [401, 403, 404].contains(status) { throw UpdateFailure.accessRequired }
             throw UpdateFailure.unavailable
         }
-        return try feed(in: JSONDecoder().decode([GitHubRelease].self, from: data), allowPrereleases: allowPrereleases)
+        let asset = try feed(in: JSONDecoder().decode([GitHubRelease].self, from: data), allowPrereleases: allowPrereleases)
+        // Sparkle overrides Accept with RSS, which makes GitHub's asset API return
+        // JSON metadata instead of the signed XML. Resolve GitHub's download redirect
+        // ourselves, then give Sparkle the credential-free, temporary CDN URL.
+        var download = URLRequest(url: asset)
+        download.timeoutInterval = 25
+        download.setValue("application/octet-stream", forHTTPHeaderField: "Accept")
+        download.setValue("2022-11-28", forHTTPHeaderField: "X-GitHub-Api-Version")
+        if let token { download.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization") }
+        let (_, assetResponse) = try await session.data(for: download)
+        guard let response = assetResponse as? HTTPURLResponse else { throw UpdateFailure.unavailable }
+        if [401, 403, 404].contains(response.statusCode) { throw UpdateFailure.accessRequired }
+        return try feedDownloadURL(from: response)
+    }
+    static func feedDownloadURL(from response: HTTPURLResponse) throws -> URL {
+        // HTTPClient deliberately stops cross-origin redirects, retaining GitHub's
+        // Location header without ever forwarding a GitHub token to the CDN.
+        guard response.statusCode == 302, let origin = response.url, isAssetURL(origin),
+              let location = response.value(forHTTPHeaderField: "Location"),
+              let url = URL(string: location), url.scheme == "https",
+              url.host == "release-assets.githubusercontent.com", url.port == nil,
+              url.user == nil, url.password == nil, url.fragment == nil else {
+            throw UpdateFailure.invalidAsset
+        }
+        return url
+    }
+    static func authorizeArchive(_ request: NSMutableURLRequest, token: String?) {
+        request.setValue(nil, forHTTPHeaderField: "Authorization")
+        if let token, let url = request.url, isAssetURL(url) {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
     }
 }
 
