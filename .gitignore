@@ -1,0 +1,44 @@
+# Build products and dependency checkouts
+/.build/
+/.swiftpm/
+/dist/
+/DerivedData/
+*.app/
+*.dmg
+*.pkg
+*.zip
+*.xcarchive/
+
+# Shared project guidance, including checkouts with an older local exclude
+!/AGENTS.md
+
+# Temporary working files
+/scratch/
+/tmp/
+codex-clipboard-*
+*.log
+__pycache__/
+*.pyc
+
+# Machine and editor state
+.DS_Store
+**/xcuserdata/
+*.xcuserstate
+/.codex/
+/.agents/
+/.idea/
+/.vscode/
+
+# Signing, notarization, update keys, and local credentials
+/.forma-signing-identity
+/.release-config*
+.env
+.env.*
+!.env.example
+*.p12
+*.p8
+*.pem
+*.key
+*.cer
+*.mobileprovision
+*.provisionprofile

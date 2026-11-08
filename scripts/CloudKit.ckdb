@@ -1,0 +1,13 @@
+DEFINE SCHEMA
+
+    RECORD TYPE FormaSyncItem (
+        "___createTime" TIMESTAMP,
+        "___createdBy" REFERENCE,
+        "___etag" STRING,
+        "___modTime" TIMESTAMP,
+        "___modifiedBy" REFERENCE,
+        "___recordID" REFERENCE QUERYABLE,
+        payload BYTES,
+        GRANT CREATE TO "_icloud",
+        GRANT READ, WRITE TO "_creator"
+    );

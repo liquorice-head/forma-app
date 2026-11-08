@@ -1,0 +1,52 @@
+{
+  "fill-specializations": [
+    {
+      "value": {
+        "solid": "srgb:0.98500,0.98500,0.98500,1.00000"
+      }
+    },
+    {
+      "appearance": "dark",
+      "value": {
+        "solid": "srgb:0.08000,0.08000,0.08000,1.00000"
+      }
+    }
+  ],
+  "groups": [
+    {
+      "name": "Forma",
+      "layers": [
+        {
+          "image-name": "Forma-mark.svg",
+          "name": "Offset brackets",
+          "glass": false,
+          "fill-specializations": [
+            {
+              "value": {
+                "solid": "srgb:0.08000,0.08000,0.08000,1.00000"
+              }
+            },
+            {
+              "appearance": "dark",
+              "value": {
+                "solid": "srgb:0.98500,0.98500,0.98500,1.00000"
+              }
+            }
+          ]
+        }
+      ],
+      "shadow": {
+        "kind": "neutral",
+        "opacity": 0
+      },
+      "specular": false,
+      "translucency": {
+        "enabled": false,
+        "value": 0
+      }
+    }
+  ],
+  "supported-platforms": {
+    "squares": "shared"
+  }
+}
