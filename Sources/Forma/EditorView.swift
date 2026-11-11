@@ -236,19 +236,30 @@ struct AlternativesView: View {
             if let message = model.alternativesMessage {
                 Text(tr(message)).font(.callout).foregroundStyle(.secondary)
             }
-            VStack(spacing: 2) {
-                ForEach(model.alternatives) { variant in
-                    Button { model.replaceSelection(with: variant) } label: {
-                        HStack { Text(variant.replacement); Spacer(); Image(systemName: "arrow.turn.down.left").foregroundStyle(.tertiary) }
-                            .padding(.vertical, 8).padding(.horizontal, 10).contentShape(Rectangle())
-                    }.buttonStyle(.plain)
+            if !model.alternatives.isEmpty {
+                ScrollView {
+                    VStack(spacing: 2) {
+                        ForEach(model.alternatives) { variant in
+                            Button { model.replaceSelection(with: variant) } label: {
+                                HStack(alignment: .top) {
+                                    Text(variant.replacement).multilineTextAlignment(.leading).fixedSize(horizontal: false, vertical: true)
+                                    Spacer(minLength: 8)
+                                    Image(systemName: "arrow.turn.down.left").foregroundStyle(.tertiary)
+                                }
+                                .padding(.vertical, 8).padding(.horizontal, 10).contentShape(Rectangle())
+                            }.buttonStyle(.plain)
+                        }
+                    }
                 }
-            }.background(.quaternary.opacity(0.4), in: RoundedRectangle(cornerRadius: 9))
+                .frame(maxHeight: 320)
+                .scrollBounceBehavior(.basedOnSize)
+                .background(.quaternary.opacity(0.4), in: RoundedRectangle(cornerRadius: 9))
+            }
             if !model.alternatives.isEmpty {
                 Label(tr("Выбор сохранится в словаре, если найдено соответствие в оригинале."), systemImage: "bookmark")
                     .font(.caption2).foregroundStyle(.secondary)
             }
-        }.padding(18).frame(width: 260)
+        }.padding(18).frame(width: 340)
         .task(id: selected.id) { model.loadAlternatives(for: selected) }
         .onDisappear { model.cancelAlternatives() }
     }
